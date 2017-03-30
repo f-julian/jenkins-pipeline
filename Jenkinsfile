@@ -57,7 +57,7 @@ stage('UI-Test') {
 
             withTestEnv {envName, dbUser ->
                 build job: 'deploy', parameters: [string(name: 'ENV_NAME', value: envName),
-                                                  string(name: 'DB_USER', value: lockedResource),
+                                                  string(name: 'DB_USER', value: dbUser),
                                                   string(name: 'COUNTRY', value: country)]
                 node {
                     echo 'checkout'
