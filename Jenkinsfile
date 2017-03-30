@@ -96,5 +96,6 @@ def isMaster() {
 }
 
 def isReleaseBranch() {
-    BRANCH_NAME =~ /release\/.+/
+    def group = (BRANCH_NAME ==~ /release\/.+/)
+    return group
 }
