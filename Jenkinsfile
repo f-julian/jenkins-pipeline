@@ -30,7 +30,6 @@ stage('IT-Test') {
     }
 
         parallel (tasks)
-    }
 }
 stage('UI-Test') {
     input message: 'Deploy?'
@@ -47,20 +46,8 @@ stage('UI-Test') {
                    echo 'geb be' // traefik url of env
                }
                // build job undeploy
+               }
            })
-
+    }
     parallel (tasks)
-  }
-
-  // Take the string and echo it.
-  def transformIntoStep(inputString) {
-      // We need to wrap what we return in a Groovy closure, or else it's invoked
-      // when this method is called, not when we pass it to parallel.
-      // To do this, you need to wrap the code below in { }, and either return
-      // that explicitly, or use { -> } syntax.
-      return {
-          node {
-              echo inputString
-          }
-      }
   }
