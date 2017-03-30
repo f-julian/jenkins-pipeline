@@ -14,6 +14,7 @@ stage('IT-Test') {
                     node {
                             lock(quantity: 1, label: 'mimas_it') {
                               echo 'checkout'
+                              checkout scm
                               echo 'got: ' + org.jenkins.plugins.lockableresources.LockableResourcesManager.class.get().getResourcesFromBuild(currentBuild.getRawBuild())[0].getName()
                               echo 'bootstrap be'
                               echo 'it test be'
@@ -25,6 +26,7 @@ stage('IT-Test') {
                             lock(quantity: 1, label: 'mimas_it') {
                               echo 'checkout'
                               checkout scm
+                              echo 'got: ' + org.jenkins.plugins.lockableresources.LockableResourcesManager.class.get().getResourcesFromBuild(currentBuild.getRawBuild())[0].getName()
                               echo 'bootstrap ch'
                               echo 'it test ch'
                             }
@@ -39,7 +41,7 @@ stage('UI-Test') {
     parallel (
         be: {
             lock(quantity: 1, label: 'mimas_feature_dev_env_be') {
-                build job: 'deploy', parameters: [string(name: 'ENV_NAME', value: 'GIT_BRANCH'),
+                build job: 'deploy', parameters: [string(name: 'ENV_NAME', value: GIT_BRANCH),
                                                   string(name: 'DB_USER', value: 'lockedresource'),
                                                   string(name: 'COUNTRY', value: 'be')]
                 node {
