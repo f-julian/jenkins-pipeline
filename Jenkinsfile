@@ -39,15 +39,15 @@ stage('UI-Test') {
 
     def tasks = [:]
     for (i = 0; i < countries.size(); i++) {
+        def country = countries[i]
         tasks.put(countries[i], {
             lock(quantity: 1, label: 'mimas_feature_dev_env') {
-                echo 'got: ' + lockedResource()
+                def lockedResource = lockedResource()
+                def envName = envNameForBranch(BRANCH_NAME)
 
-                echo envNameForBranch(BRANCH_NAME)
-
-                build job: 'deploy', parameters: [string(name: 'ENV_NAME', value: BRANCH_NAME),
-                                                  string(name: 'DB_USER', value: 'lockedresource'),
-                                                  string(name: 'COUNTRY', value: 'be')]
+                build job: 'deploy', parameters: [string(name: 'ENV_NAME', value: envName),
+                                                  string(name: 'DB_USER', value: lockedResource),
+                                                  string(name: 'COUNTRY', value: country)]
                 node {
                     echo 'checkout'
                     echo 'geb be' // traefik url of env
@@ -65,10 +65,8 @@ def lockedResource() {
 }
 
 def envNameForBranch(branch) {
-    
-    def group = (branch =~ /(.+)\/(.+)/)
 
-    echo group
+    def group = (branch =~ /(.+)\/(.+)/)
 
     def type = group[0][1]
     def qualifier = group[0][2]
@@ -80,5 +78,5 @@ def envNameForBranch(branch) {
         return "rel-$qualifier"
     }
 
-    return $qualifier
+    return qualifier
 }
