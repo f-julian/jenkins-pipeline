@@ -37,6 +37,7 @@ stage('UI-Test') {
     input message: 'Deploy?'
     milestone label: 'UI'
 
+    def tasks = [:]
     for (i = 0; i < countries.size(); i++) {
         tasks.put(countries[i], {
             lock(quantity: 1, label: 'mimas_feature_dev_env_be') {
