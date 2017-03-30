@@ -41,7 +41,7 @@ stage('UI-Test') {
     parallel (
         be: {
             lock(quantity: 1, label: 'mimas_feature_dev_env_be') {
-                build job: 'deploy', parameters: [string(name: 'ENV_NAME', value: GIT_BRANCH),
+                build job: 'deploy', parameters: [string(name: 'ENV_NAME', value: BRANCH_NAME),
                                                   string(name: 'DB_USER', value: 'lockedresource'),
                                                   string(name: 'COUNTRY', value: 'be')]
                 node {
@@ -54,7 +54,7 @@ stage('UI-Test') {
         },
         ch: {
             lock(quantity: 1, resource: 'mimas_feature_dev_env_ch') {
-                build job: 'deploy', parameters: [string(name: 'ENV_NAME', value: 'GIT_BRANCH'),
+                build job: 'deploy', parameters: [string(name: 'ENV_NAME', value: BRANCH_NAME),
                                                   string(name: 'DB_USER', value: 'lockedresource'),
                                                   string(name: 'COUNTRY', value: 'ch')]
                 node {
