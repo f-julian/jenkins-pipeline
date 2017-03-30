@@ -65,11 +65,13 @@ def lockedResource() {
 }
 
 def envNameForBranch(branch) {
+    
+    def group = (branch =~ /(.+)\/(.+)/)
 
-    def group = (branch =~ /(\w+)\/(\w+)\/(\w+)/)
+    echo group
 
-    def type = group[1][1]
-    def qualifier = group[1][2]
+    def type = group[0][1]
+    def qualifier = group[0][2]
 
     if (type == 'master') {
         return 'ci'
