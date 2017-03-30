@@ -40,8 +40,10 @@ stage('UI-Test') {
     def tasks = [:]
     for (i = 0; i < countries.size(); i++) {
         tasks.put(countries[i], {
-            lock(quantity: 1, label: 'mimas_feature_dev_env_be') {
+            lock(quantity: 1, label: 'mimas_feature_dev_env') {
                 echo 'got: ' + lockedResource()
+
+                echo envNameForBranch(BRANCH_NAME)
 
                 build job: 'deploy', parameters: [string(name: 'ENV_NAME', value: BRANCH_NAME),
                                                   string(name: 'DB_USER', value: 'lockedresource'),
@@ -60,4 +62,21 @@ stage('UI-Test') {
 
 def lockedResource() {
     org.jenkins.plugins.lockableresources.LockableResourcesManager.class.get().getResourcesFromBuild(currentBuild.getRawBuild())[0].getName()
+}
+
+def envNameForBranch(branch) {
+
+    def group = (branch =~ /(\w+)\/(\w+)\/(\w+)/)
+
+    def type = group[1][1]
+    def qualifier = group[1][2]
+
+    if (type == 'master') {
+        return 'ci'
+    }
+    if (type == 'release') {
+        return "rel-$qualifier"
+    }
+
+    return $qualifier
 }
