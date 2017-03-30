@@ -78,7 +78,7 @@ stage('UI-Test') {
 
 def withTestEnv(task) {
     lock(quantity: 1, label: 'mimas_feature_dev_env') {
-        def lockedResource = lockedResource()
+        def dbUser = lockedResource()
         def envName = envNameForBranch(BRANCH_NAME)
         task.call(envName, dbUser)
     }
