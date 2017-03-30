@@ -2,6 +2,7 @@
 def countries = ['be', 'ch', 'nl']
 def autoDeploy = isMaster() || isReleaseBranch()
 def autoUndeploy = !isMaster()
+def updateVersion = !isMaster() && !isReleaseBranch()
 
 
 echo "isMaster: ${isMaster()}"
@@ -12,7 +13,10 @@ stage('Build') {
         checkout scm
 
         // if master or release
-        echo 'update pom version of not master or release'
+        if (updateVersion) {
+            echo 'update pom version'
+        }
+
         echo 'mvn deploy'
         bat 'set'
     }
@@ -82,11 +86,13 @@ def envNameForBranch(branch) {
     def group = (branch =~ /(.+)\/(.+)/)
 
     def type = group[0][1]
-    def qualifier = group[0][2]
-
+    
     if (type == 'master') {
         return 'ci'
     }
+
+    def qualifier = group[0][2]
+
     if (type == 'release') {
         return "rel-$qualifier"
     }
