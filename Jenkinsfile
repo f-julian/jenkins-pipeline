@@ -91,14 +91,13 @@ def lockedResource() {
 
 def envNameForBranch(branch) {
 
-    def group = (branch =~ /(.+)\/(.+)/)
-
-    def type = group[0][1]
-
-    if (type == 'master') {
+    if (branch == 'master') {
         return 'ci'
     }
 
+    def group = (branch =~ /(.+)\/(.+)/)
+
+    def type = group[0][1]
     def qualifier = group[0][2]
 
     if (type == 'release') {
