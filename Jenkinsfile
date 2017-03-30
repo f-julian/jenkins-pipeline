@@ -4,8 +4,8 @@ def autoDeploy = isMaster() || isReleaseBranch()
 def autoUndeploy = !isMaster()
 
 
-echo "isMaster: $isMaster"
-echo "isReleaseBranch: $isReleaseBranch"
+echo "isMaster: ${isMaster()}"
+echo "isReleaseBranch: ${isReleaseBranch()}"
 
 stage('Build') {
     node {
