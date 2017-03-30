@@ -55,20 +55,20 @@ stage('UI-Test') {
         def country = countries[i]
         tasks.put(countries[i], {
 
-            withTestEnv {envName, dbUser ->
+            withTestEnv(country, {envName, dbUser, envUrl ->
                 build job: 'deploy', parameters: [string(name: 'ENV_NAME', value: envName),
                                                   string(name: 'DB_USER', value: dbUser),
                                                   string(name: 'COUNTRY', value: country)]
                 node {
                     echo 'checkout'
-                    echo 'geb be' // traefik url of env
+                    echo "geb on $envUrl"
                 }
 
                 if (!autoUndeploy) {
                     input message: 'Undeploy?'
                 }
                 // build job undeploy
-            }
+            })
 
 
         })
@@ -76,13 +76,21 @@ stage('UI-Test') {
     parallel(tasks)
 }
 
-def withTestEnv(task) {
-    lock(quantity: 1, label: 'mimas_feature_dev_env') {
-        def dbUser = lockedResource()
-        def envName = envNameForBranch(BRANCH_NAME)
-        task.call(envName, dbUser)
-    }
+def withTestEnv(country, task) {
 
+    if (isMaster()) {
+        def dbUser = "ci_$country"
+        def envName = envNameForBranch(BRANCH_NAME)
+        def envUrl = "${country}.cosmolb.mgm-edv.de/mimas/ci"
+        task.call(envName, dbUser, envUrl)
+    } else {
+        lock(quantity: 1, label: 'mimas_dev_env') {
+            def dbUser = lockedResource()
+            def envName = envNameForBranch(BRANCH_NAME)
+            def envUrl = "${country}.cosmolb.mgm-edv.de/mimas/$envName"
+            task.call(envName, dbUser, envUrl)
+        }
+    }
 }
 
 def lockedResource() {
