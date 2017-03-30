@@ -5,6 +5,7 @@ stage('Build') {
         echo 'update pom version of not master or release'
         echo 'mvn deploy'
         bat 'set'
+        checkout scm
 }
 stage('IT-Test') {
     milestone label: 'IT'
@@ -22,6 +23,7 @@ stage('IT-Test') {
                     node {
                             lock(quantity: 1, resource: 'mimasitdbuser_ch') {
                               echo 'checkout'
+                              checkout scm
                               echo 'bootstrap ch'
                               echo 'it test ch'
                             }
@@ -54,6 +56,7 @@ stage('UI-Test') {
                                                   string(name: 'COUNTRY', value: 'ch')]
                 node {
                     echo 'checkout'
+                    checkout scm
                     echo 'geb ch'
                 }
             }
