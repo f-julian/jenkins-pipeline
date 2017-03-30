@@ -14,7 +14,7 @@ stage('IT-Test') {
                     node {
                             lock(quantity: 1, label: 'mimas_it') {
                               echo 'checkout'
-                              echo org.jenkins.plugins.lockableresources.LockableResourcesManager.class.get().getResourcesFromBuild(currentBuild.getRawBuild())[0].getName()
+                              echo 'got: ' + org.jenkins.plugins.lockableresources.LockableResourcesManager.class.get().getResourcesFromBuild(currentBuild.getRawBuild())[0].getName()
                               echo 'bootstrap be'
                               echo 'it test be'
                             }
