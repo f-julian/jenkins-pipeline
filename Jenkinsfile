@@ -54,10 +54,8 @@ stage('UI-Test') {
     for (i = 0; i < countries.size(); i++) {
         def country = countries[i]
         tasks.put(countries[i], {
-            lock(quantity: 1, label: 'mimas_feature_dev_env') {
-                def lockedResource = lockedResource()
-                def envName = envNameForBranch(BRANCH_NAME)
 
+            withTestEnv {envName, dbUser ->
                 build job: 'deploy', parameters: [string(name: 'ENV_NAME', value: envName),
                                                   string(name: 'DB_USER', value: lockedResource),
                                                   string(name: 'COUNTRY', value: country)]
@@ -71,11 +69,21 @@ stage('UI-Test') {
                 }
                 // build job undeploy
             }
+
+
         })
     }
     parallel(tasks)
 }
 
+def withTestEnv(task) {
+    lock(quantity: 1, label: 'mimas_feature_dev_env') {
+        def lockedResource = lockedResource()
+        def envName = envNameForBranch(BRANCH_NAME)
+        task.call(envName, dbUser)
+    }
+
+}
 
 def lockedResource() {
     org.jenkins.plugins.lockableresources.LockableResourcesManager.class.get().getResourcesFromBuild(currentBuild.getRawBuild())[0].getName()
@@ -86,7 +94,7 @@ def envNameForBranch(branch) {
     def group = (branch =~ /(.+)\/(.+)/)
 
     def type = group[0][1]
-    
+
     if (type == 'master') {
         return 'ci'
     }
