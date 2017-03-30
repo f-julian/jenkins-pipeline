@@ -4,6 +4,7 @@ stage('Build') {
         // if master or release
         echo 'update pom version of not master or release'
         echo 'mvn deploy'
+        bat set
 }
 stage('IT-Test') {
     milestone label: 'IT'
