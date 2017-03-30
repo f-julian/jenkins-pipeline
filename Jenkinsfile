@@ -22,7 +22,7 @@ stage('IT-Test') {
             node {
                 lock(quantity: 1, label: 'mimas_it') {
                     checkout scm
-                    echo 'got: ' + org.jenkins.plugins.lockableresources.LockableResourcesManager.class.get().getResourcesFromBuild(currentBuild.getRawBuild())[0].getName()
+                    echo 'got: ' + lockedResource()
                     echo "bootstrap $country"
                     echo "it test $country"
                 }
@@ -41,6 +41,8 @@ stage('UI-Test') {
     for (i = 0; i < countries.size(); i++) {
         tasks.put(countries[i], {
             lock(quantity: 1, label: 'mimas_feature_dev_env_be') {
+                echo 'got: ' + lockedResource()
+
                 build job: 'deploy', parameters: [string(name: 'ENV_NAME', value: BRANCH_NAME),
                                                   string(name: 'DB_USER', value: 'lockedresource'),
                                                   string(name: 'COUNTRY', value: 'be')]
@@ -53,4 +55,9 @@ stage('UI-Test') {
         })
     }
     parallel(tasks)
+}
+
+
+def lockedResource() {
+    org.jenkins.plugins.lockableresources.LockableResourcesManager.class.get().getResourcesFromBuild(currentBuild.getRawBuild())[0].getName()
 }
