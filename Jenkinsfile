@@ -28,41 +28,27 @@ stage('IT-Test') {
            })
     }
 
-        parallel (
-                tasks)
+        parallel (tasks)
     }
 }
 stage('UI-Test') {
     input message: 'Deploy?'
     milestone label: 'UI'
-    parallel (
-        be: {
-            lock(quantity: 1, label: 'mimas_feature_dev_env_be') {
-                build job: 'deploy', parameters: [string(name: 'ENV_NAME', value: BRANCH_NAME),
-                                                  string(name: 'DB_USER', value: 'lockedresource'),
-                                                  string(name: 'COUNTRY', value: 'be')]
-                node {
-                    echo 'checkout'
-                    echo 'geb be' // traefik url of env
-                }
-                // build job undeploy
-            }
 
-        },
-        ch: {
-            lock(quantity: 1, resource: 'mimas_feature_dev_env_ch') {
-                build job: 'deploy', parameters: [string(name: 'ENV_NAME', value: BRANCH_NAME),
-                                                  string(name: 'DB_USER', value: 'lockedresource'),
-                                                  string(name: 'COUNTRY', value: 'ch')]
-                node {
-                    echo 'checkout'
-                    checkout scm
-                    echo 'geb ch'
-                }
-            }
+    for (i = 0; i <countries.size(); i++) {
+       tasks.put(countries[i], {
+           lock(quantity: 1, label: 'mimas_feature_dev_env_be') {
+               build job: 'deploy', parameters: [string(name: 'ENV_NAME', value: BRANCH_NAME),
+                                                 string(name: 'DB_USER', value: 'lockedresource'),
+                                                 string(name: 'COUNTRY', value: 'be')]
+               node {
+                   echo 'checkout'
+                   echo 'geb be' // traefik url of env
+               }
+               // build job undeploy
+           })
 
-        },
-        failFast: false)
+    parallel (tasks)
   }
 
   // Take the string and echo it.
