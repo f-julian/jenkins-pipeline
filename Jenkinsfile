@@ -1,3 +1,6 @@
+#!groovy
+def countries = ['be', 'ch', 'nl']
+
 stage('Build') {
     node {
         echo 'checkout'
@@ -9,30 +12,24 @@ stage('Build') {
 }
 stage('IT-Test') {
     milestone label: 'IT'
+
+    def tasks = [:]
+    for (i = 0; i <countries.size(); i++) {
+       tasks.put(countries[i], {
+           node {
+                   lock(quantity: 1, label: 'mimas_it') {
+                     echo 'checkout'
+                     checkout scm
+                     echo 'got: ' + org.jenkins.plugins.lockableresources.LockableResourcesManager.class.get().getResourcesFromBuild(currentBuild.getRawBuild())[0].getName()
+                     echo 'bootstrap be'
+                     echo 'it test be'
+                   }
+           }
+           })
+    }
+
         parallel (
-                be: {
-                    node {
-                            lock(quantity: 1, label: 'mimas_it') {
-                              echo 'checkout'
-                              checkout scm
-                              echo 'got: ' + org.jenkins.plugins.lockableresources.LockableResourcesManager.class.get().getResourcesFromBuild(currentBuild.getRawBuild())[0].getName()
-                              echo 'bootstrap be'
-                              echo 'it test be'
-                            }
-                    }
-                },
-                ch: {
-                    node {
-                            lock(quantity: 1, label: 'mimas_it') {
-                              echo 'checkout'
-                              checkout scm
-                              echo 'got: ' + org.jenkins.plugins.lockableresources.LockableResourcesManager.class.get().getResourcesFromBuild(currentBuild.getRawBuild())[0].getName()
-                              echo 'bootstrap ch'
-                              echo 'it test ch'
-                            }
-                    }
-                },
-                failFast: false)
+                tasks)
     }
 }
 stage('UI-Test') {
@@ -66,4 +63,17 @@ stage('UI-Test') {
 
         },
         failFast: false)
+  }
+
+  // Take the string and echo it.
+  def transformIntoStep(inputString) {
+      // We need to wrap what we return in a Groovy closure, or else it's invoked
+      // when this method is called, not when we pass it to parallel.
+      // To do this, you need to wrap the code below in { }, and either return
+      // that explicitly, or use { -> } syntax.
+      return {
+          node {
+              echo inputString
+          }
+      }
   }
