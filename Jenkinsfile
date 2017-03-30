@@ -55,7 +55,7 @@ stage('UI-Test') {
         def country = countries[i]
         tasks.put(countries[i], {
 
-            withTestEnv(countries[i], {envName, dbUser, envUrl ->
+            withTestEnv(country, {envName, dbUser, envUrl ->
                 build job: 'deploy', parameters: [string(name: 'ENV_NAME', value: envName),
                                                   string(name: 'DB_USER', value: dbUser),
                                                   string(name: 'COUNTRY', value: country)]
