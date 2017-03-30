@@ -15,14 +15,15 @@ stage('IT-Test') {
 
     def tasks = [:]
     for (i = 0; i <countries.size(); i++) {
-       tasks.put(countries[i], {
+       def country = countries[i]
+       tasks.put(country, {
            node {
                    lock(quantity: 1, label: 'mimas_it') {
                      echo 'checkout'
                      checkout scm
                      echo 'got: ' + org.jenkins.plugins.lockableresources.LockableResourcesManager.class.get().getResourcesFromBuild(currentBuild.getRawBuild())[0].getName()
-                     echo 'bootstrap be'
-                     echo 'it test be'
+                     echo "bootstrap $country"
+                     echo "it test $country"
                    }
            }
            })
