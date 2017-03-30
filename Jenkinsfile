@@ -1,5 +1,8 @@
 #!groovy
 def countries = ['be', 'ch', 'nl']
+def autoDeploy = isMaster() || isReleaseBranch()
+def autoUndeploy = !isMaster()
+
 
 stage('Build') {
     node {
@@ -34,7 +37,10 @@ stage('IT-Test') {
 }
 
 stage('UI-Test') {
-    input message: 'Deploy?'
+    if (!autoDeploy) {
+        input message: 'Deploy?'
+    }
+
     milestone label: 'UI'
 
     def tasks = [:]
@@ -51,6 +57,10 @@ stage('UI-Test') {
                 node {
                     echo 'checkout'
                     echo 'geb be' // traefik url of env
+                }
+
+                if (!autoUndeploy) {
+                    input message: 'Undeploy?'
                 }
                 // build job undeploy
             }
@@ -79,4 +89,12 @@ def envNameForBranch(branch) {
     }
 
     return qualifier
+}
+
+def isMaster() {
+    BRANCH_NAME == 'master'
+}
+
+def isReleaseBranch() {
+    BRANCH_NAME =~ /release\/.+/
 }
