@@ -44,24 +44,18 @@ stage('Build') {
 stage('IT-Test') {
     milestone label: 'IT'
 
-    def tasks = [:]
-    for (i = 0; i < countries.size(); i++) {
-        def country = countries[i]
-        tasks.put(country, {
-            node {
-                lock(quantity: 1, label: 'mimas_it') {
-                    checkout scm
-                    //bat "git checkout $buildTag"
+    forEachCountry { country ->
+        node {
+            lock(quantity: 1, label: 'mimas_it') {
+                checkout scm
+                //bat "git checkout $buildTag"
 
-                    echo 'got: ' + lockedResource()
-                    echo "bootstrap $country"
-                    echo "it test $country"
-                }
+                echo 'got: ' + lockedResource()
+                echo "bootstrap $country"
+                echo "it test $country"
             }
-        })
+        }
     }
-
-    parallel(tasks)
 }
 
 stage('UI-Test') {
@@ -123,6 +117,16 @@ stage('merge') {
 stage('delete build tag') {
     bat "git push origin :refs/tags/$buildTag"
 
+}
+
+def forEachCountry(task) {
+    def tasks = [:]
+    for (i = 0; i < countries.size(); i++) {
+        def country = countries[i]
+        tasks.put(countries[i], { task.call(country) })
+    }
+
+    parallel(tasks)
 }
 
 def withTestEnv(country, task) {
