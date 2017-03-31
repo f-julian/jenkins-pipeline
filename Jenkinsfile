@@ -4,6 +4,7 @@ def autoDeploy = isMaster() || isReleaseBranch()
 def autoUndeploy = !isMaster()
 def updateVersion = !isMaster() && !isReleaseBranch()
 
+def buildTag
 
 echo "isMaster: ${isMaster()}"
 echo "isReleaseBranch: ${isReleaseBranch()}"
@@ -11,6 +12,10 @@ echo "isReleaseBranch: ${isReleaseBranch()}"
 stage('Build') {
     node {
         checkout scm
+
+        buildTag = "build/${BRANCH_NAME}/${BUILD_NUMBER}"
+        sh "git tag $buildTag"
+        sh "git push origin $buildTag"
 
         // if master or release
         if (updateVersion) {
@@ -32,6 +37,8 @@ stage('IT-Test') {
             node {
                 lock(quantity: 1, label: 'mimas_it') {
                     checkout scm
+                    sh "git checkout $buildTag"
+
                     echo 'got: ' + lockedResource()
                     echo "bootstrap $country"
                     echo "it test $country"
