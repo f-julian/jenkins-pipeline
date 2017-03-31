@@ -29,7 +29,7 @@ stage('Build') {
         }
 
         bat "git tag $buildTag"
-        bat "git push origin $buildTag"
+        //bat "git push origin $buildTag"
 
         // if master or release
         if (updateVersion) {
@@ -106,14 +106,14 @@ stage('merge') {
             checkout scm
             bat "git checkout $buildTag"
 
-            bat "git push"
+            //bat "git push"
         }
 
         if (!isMaster()) {
             input message: "delete branch ${BRANCH_NAME} ?"
             node {
                 checkout scm
-                bat "git push origin --delete ${BRANCH_NAME}"
+                //bat "git push origin --delete ${BRANCH_NAME}"
             }
         }
     }
