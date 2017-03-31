@@ -122,8 +122,7 @@ stage('delete build tag') {
 def forEachCountry(countries, task) {
     def tasks = [:]
     for (i = 0; i < countries.size(); i++) {
-        def country = countries[i]
-        tasks.put(countries[i], { task.call(country) })
+        tasks.put(countries[i], { task.call(countries[i]) })
     }
 
     parallel(tasks)
