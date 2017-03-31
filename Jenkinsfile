@@ -65,30 +65,23 @@ stage('UI-Test') {
 
     milestone label: 'UI'
 
-    def tasks = [:]
-    for (i = 0; i < countries.size(); i++) {
-        def country = countries[i]
-        tasks.put(countries[i], {
+    forEachCountry(countries, { country ->
 
-            withTestEnv(country, { envName, dbUser, envUrl ->
-                build job: 'deploy', parameters: [string(name: 'ENV_NAME', value: envName),
-                                                  string(name: 'DB_USER', value: dbUser),
-                                                  string(name: 'COUNTRY', value: country)]
-                node {
-                    echo 'checkout'
-                    echo "geb on $envUrl"
-                }
+        withTestEnv(country, { envName, dbUser, envUrl ->
+            build job: 'deploy', parameters: [string(name: 'ENV_NAME', value: envName),
+                                              string(name: 'DB_USER', value: dbUser),
+                                              string(name: 'COUNTRY', value: country)]
+            node {
+                echo 'checkout'
+                echo "geb on $envUrl"
+            }
 
-                if (!autoUndeploy) {
-                    input message: 'Undeploy?'
-                }
-                // build job undeploy
-            })
-
-
+            if (!autoUndeploy) {
+                input message: 'Undeploy?'
+            }
+            // build job undeploy
         })
-    }
-    parallel(tasks)
+    })
 }
 
 stage('merge') {
