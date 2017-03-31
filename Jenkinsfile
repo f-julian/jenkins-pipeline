@@ -123,9 +123,10 @@ def forEachCountry(countries, task) {
     def tasks = [:]
     for (i = 0; i < countries.size(); i++) {
         def country = countries[i] //TODO
+        def c = country
+        
+        tasks.put(country, {
 
-        tasks.put(country, { ->
-            def c = country
             task.call(c)
         })
     }
