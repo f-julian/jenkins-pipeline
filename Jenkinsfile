@@ -48,6 +48,8 @@ stage('IT-Test') {
     milestone label: 'IT'
 
     forEachCountry(countries, { country ->
+        echo "IT-country: $country"
+
         node {
             lock(quantity: 1, label: 'mimas_it', variable: 'DBUSER') {
                 checkout scm
@@ -122,6 +124,9 @@ def forEachCountry(countries, task) {
     for (i = 0; i < countries.size(); i++) {
         def j = i
         def country = countries[j] //TODO
+        println "country: $country"
+        println "countryi: ${countries[i]}"
+        println "countryj: ${countries[j]}"
 
         tasks.put(countries[j], { task.call(countries[j]) })
     }
