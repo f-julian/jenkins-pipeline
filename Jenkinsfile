@@ -15,7 +15,7 @@ stage('Build') {
 
         buildTag = "build/${BRANCH_NAME}/${BUILD_NUMBER}"
         bat "git tag $buildTag"
-        bat "git pubat origin $buildTag"
+        bat "git push origin $buildTag"
 
         // if master or release
         if (updateVersion) {
