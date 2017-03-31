@@ -50,7 +50,7 @@ stage('IT-Test') {
                 checkout scm
                 //bat "git checkout $buildTag"
 
-                echo 'got: ' + $ { env.DBUSER }
+                echo 'got: ' + ${env.DBUSER}
                 echo "bootstrap $country"
                 echo "it test $country"
             }
