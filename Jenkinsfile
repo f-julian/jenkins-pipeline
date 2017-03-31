@@ -120,7 +120,7 @@ def forEachCountry(countries, task) {
         def j = i
         def country = countries[j] //TODO
 
-        tasks.put(countries[j], { task.call(country) })
+        tasks.put(countries[j], { task.call(countries[j]) })
     }
 
     parallel(tasks)
