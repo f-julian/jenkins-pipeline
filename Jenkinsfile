@@ -19,6 +19,12 @@ stage('Build') {
         checkout scm
 
         buildTag = "build/${BRANCH_NAME}/${BUILD_NUMBER}"
+
+        if (merge) {
+            bat "git checkout $mergeTarget"
+            bat "git merge --no-ff ${BRANCH_NAME}"
+        }
+
         bat "git tag $buildTag"
         bat "git push origin $buildTag"
 
@@ -67,7 +73,7 @@ stage('UI-Test') {
         def country = countries[i]
         tasks.put(countries[i], {
 
-            withTestEnv(country, {envName, dbUser, envUrl ->
+            withTestEnv(country, { envName, dbUser, envUrl ->
                 build job: 'deploy', parameters: [string(name: 'ENV_NAME', value: envName),
                                                   string(name: 'DB_USER', value: dbUser),
                                                   string(name: 'COUNTRY', value: country)]
@@ -86,6 +92,32 @@ stage('UI-Test') {
         })
     }
     parallel(tasks)
+}
+
+stage('merge') {
+    if (merge) {
+        input message: "push merge ${BRANCH_NAME} to $mergeTarget ?"
+        milestone label: 'merge'
+
+        node {
+            checkout scm
+            bat "git checkout $buildTag"
+
+            bat "git push"
+        }
+
+        input message: "delete branch ${BRANCH_NAME} ?"
+        node {
+            checkout scm
+            bat "git push origin --delete ${BRANCH_NAME}"
+        }
+    }
+}
+
+// finally
+stage('delete build tag') {
+    bat "git push origin :refs/tags/$buildTag"
+
 }
 
 def withTestEnv(country, task) {
