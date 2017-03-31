@@ -108,8 +108,10 @@ stage('merge') {
 
 // finally
 stage('delete build tag') {
-    bat "git push origin :refs/tags/$buildTag"
-
+    node {
+        checkout scm
+        //bat "git push origin :refs/tags/$buildTag"
+    }
 }
 
 def forEachCountry(countries, task) {
