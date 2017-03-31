@@ -44,7 +44,7 @@ stage('Build') {
 stage('IT-Test') {
     milestone label: 'IT'
 
-    forEachCountry { country ->
+    forEachCountry(countries, { country ->
         node {
             lock(quantity: 1, label: 'mimas_it') {
                 checkout scm
@@ -55,7 +55,7 @@ stage('IT-Test') {
                 echo "it test $country"
             }
         }
-    }
+    })
 }
 
 stage('UI-Test') {
@@ -119,7 +119,7 @@ stage('delete build tag') {
 
 }
 
-def forEachCountry(task) {
+def forEachCountry(countries, task) {
     def tasks = [:]
     for (i = 0; i < countries.size(); i++) {
         def country = countries[i]
