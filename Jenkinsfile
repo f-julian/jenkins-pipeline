@@ -9,6 +9,11 @@ def buildTag
 echo "isMaster: ${isMaster()}"
 echo "isReleaseBranch: ${isReleaseBranch()}"
 
+properties([parameters([booleanParam(defaultValue: false, description: '', name: 'merge'),
+                        string(defaultValue: 'origin/master', description: '', name: 'mergeTarget')]),
+            [$class: 'RebuildSettings', autoRebuild: false, rebuildDisabled: false],
+            pipelineTriggers([])])
+
 stage('Build') {
     node {
         checkout scm
