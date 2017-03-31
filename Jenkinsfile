@@ -46,11 +46,11 @@ stage('IT-Test') {
 
     forEachCountry(countries, { country ->
         node {
-            lock(quantity: 1, label: 'mimas_it') {
+            lock(quantity: 1, label: 'mimas_it', variable: 'DBUSER') {
                 checkout scm
                 //bat "git checkout $buildTag"
 
-                echo 'got: ' + lockedResource()
+                echo 'got: ' + ${env.DBUSER}
                 echo "bootstrap $country"
                 echo "it test $country"
             }
@@ -132,8 +132,8 @@ def withTestEnv(country, task) {
         def envUrl = "${country}.cosmolb.mgm-edv.de/mimas/ci"
         task.call(envName, dbUser, envUrl)
     } else {
-        lock(quantity: 1, label: 'mimas_dev_env') {
-            def dbUser = lockedResource()
+        lock(quantity: 1, label: 'mimas_dev_env', variable: 'DBUSER') {
+            def dbUser = ${env.DBUSER}
             def envName = envNameForBranch(BRANCH_NAME)
             def envUrl = "${country}.cosmolb.mgm-edv.de/mimas/$envName"
             task.call(envName, dbUser, envUrl)
