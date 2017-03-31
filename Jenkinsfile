@@ -50,7 +50,7 @@ stage('IT-Test') {
                 checkout scm
                 //bat "git checkout $buildTag"
 
-                echo 'got: ' + ${env.DBUSER}
+                echo 'got: ' + $ { env.DBUSER }
                 echo "bootstrap $country"
                 echo "it test $country"
             }
@@ -135,7 +135,7 @@ def withTestEnv(country, task) {
         task.call(envName, dbUser, envUrl)
     } else {
         lock(quantity: 1, label: 'mimas_dev_env', variable: 'DBUSER') {
-            def dbUser = ${env.DBUSER}
+            def dbUser = env.DBUSER
             def envName = envNameForBranch(BRANCH_NAME)
             def envUrl = "${country}.cosmolb.mgm-edv.de/mimas/$envName"
             task.call(envName, dbUser, envUrl)
