@@ -51,7 +51,7 @@ stage('IT-Test') {
             node {
                 lock(quantity: 1, label: 'mimas_it') {
                     checkout scm
-                    bat "git checkout $buildTag"
+                    //bat "git checkout $buildTag"
 
                     echo 'got: ' + lockedResource()
                     echo "bootstrap $country"
