@@ -22,7 +22,7 @@ stage('Build') {
 
         if (merge) {
             bat "git checkout $mergeTarget"
-            bat "git merge --no-ff ${BRANCH_NAME}"
+            bat "git merge --no-ff origin/${BRANCH_NAME}"
         }
 
         bat "git tag $buildTag"
@@ -106,10 +106,12 @@ stage('merge') {
             bat "git push"
         }
 
-        input message: "delete branch ${BRANCH_NAME} ?"
-        node {
-            checkout scm
-            bat "git push origin --delete ${BRANCH_NAME}"
+        if (!isMaster()) {
+            input message: "delete branch ${BRANCH_NAME} ?"
+            node {
+                checkout scm
+                bat "git push origin --delete ${BRANCH_NAME}"
+            }
         }
     }
 }
