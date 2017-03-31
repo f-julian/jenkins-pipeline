@@ -21,6 +21,9 @@ stage('Build') {
         buildTag = "build/${BRANCH_NAME}/${BUILD_NUMBER}"
 
         if (merge) {
+            bat 'git config --global user.email "you@example.com"'
+            bat 'git config --global user.name "Julian F."'
+
             bat "git checkout $mergeTarget"
             bat "git merge --no-ff origin/${BRANCH_NAME}"
         }
