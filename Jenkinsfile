@@ -16,8 +16,7 @@ properties([parameters([booleanParam(defaultValue: false, description: '', name:
 
 stage('Build') {
     node {
-        //checkout scm
-        git credentialsId: 'github2', url: 'https://github.com/f-julian/jenkins-pipeline.git'
+        checkout scm
 
         buildTag = "build/${BRANCH_NAME}/${BUILD_NUMBER}"
 
