@@ -14,8 +14,8 @@ stage('Build') {
         checkout scm
 
         buildTag = "build/${BRANCH_NAME}/${BUILD_NUMBER}"
-        sh "git tag $buildTag"
-        sh "git push origin $buildTag"
+        bat "git tag $buildTag"
+        bat "git pubat origin $buildTag"
 
         // if master or release
         if (updateVersion) {
@@ -37,7 +37,7 @@ stage('IT-Test') {
             node {
                 lock(quantity: 1, label: 'mimas_it') {
                     checkout scm
-                    sh "git checkout $buildTag"
+                    bat "git checkout $buildTag"
 
                     echo 'got: ' + lockedResource()
                     echo "bootstrap $country"
