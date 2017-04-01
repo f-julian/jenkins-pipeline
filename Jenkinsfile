@@ -32,7 +32,7 @@ stage('Build') {
 stage('IT-Test') {
     milestone label: 'IT'
 
-    // don't move to a methode see JENKINS-38268
+    // don't move to a method see JENKINS-38268
     def tasks = [:]
     for (i = 0; i < countries.size(); i++) {
         def country = countries[i]
@@ -61,7 +61,7 @@ stage('UI-Test') {
 
     milestone label: 'UI'
 
-    // don't move to a methode see JENKINS-38268
+    // don't move to a method see JENKINS-38268
     def tasks = [:]
     for (i = 0; i < countries.size(); i++) {
         def country = countries[i]
@@ -101,9 +101,8 @@ stage('UI-Test') {
             }
         })
     }
-}
 
-parallel(tasks)
+    parallel(tasks)
 }
 
 // finally
