@@ -52,6 +52,11 @@ stage('IT-Test') {
 def itTask(country) {
     echo "IT-country bla : $country"
 
+    def c = { cc ->
+        echo "IT-country bla in clos : $cc"
+    }
+    c.call(country)
+
     /*node {
         lock(quantity: 1, label: 'mimas_it', variable: 'DBUSER') {
             checkout scm
