@@ -50,18 +50,21 @@ stage('IT-Test') {
 }
 
 // JENKINS-38268
+@NonCPS
 def doIt(country, task) {
     echo "doIt with : $country"
     task.call(country)
 }
 
-def itTask(country) {
+@NonCPS
+def itTask(country, task) {
     echo "IT-country bla : $country"
 
     def c = { cc ->
         echo "IT-country bla in clos : $cc"
     }
     c.call(country)
+    task.call(country)
 
     /*node {
         lock(quantity: 1, label: 'mimas_it', variable: 'DBUSER') {
