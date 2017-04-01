@@ -49,12 +49,37 @@ stage('IT-Test') {
     })
 }
 
+def itTask(country) {
+    echo "IT-country bla : $country"
+
+    /*node {
+        lock(quantity: 1, label: 'mimas_it', variable: 'DBUSER') {
+            checkout scm
+            //bat "git checkout $buildTag"
+
+            echo 'got: ' + env.DBUSER
+            echo "bootstrap $country"
+            echo "it test $country"
+        }
+    }*/
+}
+
+stage('IT-Test_BLA') {
+    milestone label: 'IT-bla'
+
+    forEachCountry(countries, itTask)
+}
+
+
+
 stage('UI-Test') {
     if (!autoDeploy) {
         input message: 'Deploy?'
     }
 
     milestone label: 'UI'
+
+
 
     forEachCountry(countries, { country ->
 
