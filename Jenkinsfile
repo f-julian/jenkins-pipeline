@@ -49,7 +49,7 @@ stage('IT-Test') {
     })
 }
 
-def itTask(country) {
+def itTask = { country ->
     echo "IT-country bla : $country"
 
     /*node {
@@ -64,12 +64,10 @@ def itTask(country) {
     }*/
 }
 
-def f = this.itTask
-
 stage('IT-Test_BLA') {
     milestone label: 'IT-bla'
 
-    forEachCountry(countries, f)
+    forEachCountry(countries, itTask)
 }
 
 
