@@ -49,7 +49,7 @@ stage('IT-Test') {
     })
 }
 
-def itTask = { country ->
+def itTask(country) {
     echo "IT-country bla : $country"
 
     /*node {
@@ -67,7 +67,7 @@ def itTask = { country ->
 stage('IT-Test_BLA') {
     milestone label: 'IT-bla'
 
-    forEachCountry(countries, itTask)
+    forEachCountryTest(countries)
 }
 
 
@@ -120,6 +120,20 @@ def forEachCountry(countries, task) {
         tasks.put(country, {
             println "country in clos: $country"
             task.call(country, country)
+        })
+    }
+
+    parallel(tasks)
+}
+
+def forEachCountryTest(countries) {
+    def tasks = [:]
+    for (i = 0; i < countries.size(); i++) {
+        def country = countries[i] //TODO
+
+        tasks.put(country, {
+            println "country in forEachCountryTest: $country"
+            itTask(country)
         })
     }
 
