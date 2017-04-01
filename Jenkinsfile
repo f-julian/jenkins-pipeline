@@ -92,6 +92,7 @@ def forEachCountry(countries, task) {
         def country = countries[i] //TODO
 
         tasks.put(country, {
+            println "country in clos: $country"
             task.call(country)
         })
     }
@@ -114,10 +115,6 @@ def withTestEnv(country, task) {
             task.call(envName, dbUser, envUrl)
         }
     }
-}
-
-def lockedResource() {
-    org.jenkins.plugins.lockableresources.LockableResourcesManager.class.get().getResourcesFromBuild(currentBuild.getRawBuild())[0].getName()
 }
 
 def envNameForBranch(branch) {
