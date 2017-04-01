@@ -49,7 +49,7 @@ stage('IT-Test') {
     })
 }
 
-def itTask(country) {
+def itTask = f(country) {
     echo "IT-country bla : $country"
 
     /*node {
