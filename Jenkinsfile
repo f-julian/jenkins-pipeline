@@ -2,6 +2,7 @@
 def countries = ['be', 'ch', 'nl']
 def autoDeploy = isMaster() || isReleaseBranch()
 def autoUndeploy = !isMaster()
+def skipUndeploy = isMaster()
 def updateVersion = !isMaster() && !isReleaseBranch()
 
 def buildTag
@@ -65,10 +66,14 @@ stage('UI-Test') {
                 echo "geb on $envUrl"
             }
 
-            if (!autoUndeploy) {
-                input message: 'Undeploy?'
+            if (!skipUndeploy) {
+                if (!autoUndeploy) {
+                    input message: 'Undeploy?'
+                }
+
+                // build job undeploy
             }
-            // build job undeploy
+
         })
     })
 }
