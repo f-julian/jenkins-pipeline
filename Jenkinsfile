@@ -68,6 +68,9 @@ stage('UI-Test') {
 
         tasks.put(country, {
             withTestEnv(country, { envName, dbUser, envUrl ->
+
+                echo "envName: $envName, dbUser: $dbUser, envUrl: $envUrl"
+
                 build job: 'deploy', parameters: [string(name: 'ENV_NAME', value: envName),
                                                   string(name: 'DB_USER', value: dbUser),
                                                   string(name: 'COUNTRY', value: country)]
