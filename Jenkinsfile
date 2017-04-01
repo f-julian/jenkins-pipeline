@@ -49,6 +49,12 @@ stage('IT-Test') {
     })
 }
 
+// JENKINS-38268
+def doIt(country, task) {
+    echo "doIt with : $country"
+    task.call(country)
+}
+
 def itTask(country) {
     echo "IT-country bla : $country"
 
@@ -124,7 +130,8 @@ def forEachCountry(countries, task) {
 
         tasks.put(country, {
             println "country in clos: $country"
-            task.call(country, country)
+            doIt(country, task)
+            //task.call(country, country)
         })
     }
 
