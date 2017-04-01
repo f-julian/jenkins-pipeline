@@ -32,8 +32,9 @@ stage('Build') {
 stage('IT-Test') {
     milestone label: 'IT'
 
-    forEachCountry(countries, { hhhhh ->
-        echo "IT-country: $hhhhh"
+    forEachCountry(countries, { p, p1 ->
+        echo "IT-country p : $p"
+        echo "IT-country p1: $p1"
 
         /*node {
             lock(quantity: 1, label: 'mimas_it', variable: 'DBUSER') {
@@ -93,7 +94,7 @@ def forEachCountry(countries, task) {
 
         tasks.put(country, {
             println "country in clos: $country"
-            task.call(country)
+            task.call(country, country)
         })
     }
 
