@@ -32,8 +32,8 @@ stage('Build') {
 stage('IT-Test') {
     milestone label: 'IT'
 
-    forEachCountry(countries, { country ->
-        echo "IT-country: $country"
+    forEachCountry(countries, { hhhhh ->
+        echo "IT-country: $hhhhh"
 
         node {
             lock(quantity: 1, label: 'mimas_it', variable: 'DBUSER') {
