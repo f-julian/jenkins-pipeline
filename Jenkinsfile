@@ -70,7 +70,7 @@ stage('UI-Test') {
                 if (!autoUndeploy) {
                     input message: 'Undeploy?'
                 }
-
+                echo "undeploy country: $country envName:$envName"
                 // build job undeploy
             }
 
