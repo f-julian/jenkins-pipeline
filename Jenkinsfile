@@ -35,7 +35,7 @@ stage('IT-Test') {
     forEachCountry(countries, { hhhhh ->
         echo "IT-country: $hhhhh"
 
-        node {
+        /*node {
             lock(quantity: 1, label: 'mimas_it', variable: 'DBUSER') {
                 checkout scm
                 //bat "git checkout $buildTag"
@@ -44,7 +44,7 @@ stage('IT-Test') {
                 echo "bootstrap $country"
                 echo "it test $country"
             }
-        }
+        }*/
     })
 }
 
