@@ -67,7 +67,19 @@ stage('UI-Test') {
         def country = countries[i]
 
         tasks.put(country, {
-            withTestEnv(country, { envName, dbUser, envUrl ->
+
+            def devEnvLabel
+            if (isMaster()) {
+                devEnvLabel = "mimas_ci_$country"
+            } else {
+                devEnvLabel = 'mimas_dev_env'
+            }
+
+            def envName = envNameForBranch(BRANCH_NAME)
+            def envUrl = "${country}.cosmolb.mgm-edv.de/mimas/$envName"
+
+            lock(quantity: 1, label: devEnvLabel, variable: 'DBUSER') {
+                def dbUser = env.DBUSER
 
                 echo "envName: $envName, dbUser: $dbUser, envUrl: $envUrl"
 
@@ -86,11 +98,12 @@ stage('UI-Test') {
                     echo "undeploy country: $country envName:$envName"
                     // build job undeploy
                 }
-            })
+            }
         })
     }
+}
 
-    parallel(tasks)
+parallel(tasks)
 }
 
 // finally
