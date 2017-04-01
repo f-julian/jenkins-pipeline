@@ -9,27 +9,11 @@ def buildTag
 echo "isMaster: ${isMaster()}"
 echo "isReleaseBranch: ${isReleaseBranch()}"
 
-properties([parameters([booleanParam(defaultValue: false, description: '', name: 'merge'),
-                        string(defaultValue: 'origin/master', description: '', name: 'mergeTarget')]),
-            [$class: 'RebuildSettings', autoRebuild: false, rebuildDisabled: false],
-            pipelineTriggers([])])
-
 stage('Build') {
     node {
         checkout scm
 
         buildTag = "build/${BRANCH_NAME}/${BUILD_NUMBER}"
-
-        echo "merge: $merge"
-        echo "mergeTarget: $mergeTarget"
-
-        if (merge) {
-            bat 'git config --global user.email "you@example.com"'
-            bat 'git config --global user.name "Julian F."'
-
-            bat "git checkout $mergeTarget"
-            bat "git merge --no-ff origin/${BRANCH_NAME}"
-        }
 
         bat "git tag $buildTag"
         //bat "git push origin $buildTag"
@@ -87,28 +71,6 @@ stage('UI-Test') {
             // build job undeploy
         })
     })
-}
-
-stage('merge') {
-    if (merge) {
-        input message: "push merge ${BRANCH_NAME} to $mergeTarget ?"
-        milestone label: 'merge'
-
-        node {
-            checkout scm
-            bat "git checkout $buildTag"
-
-            //bat "git push"
-        }
-
-        if (!isMaster()) {
-            input message: "delete branch ${BRANCH_NAME} ?"
-            node {
-                checkout scm
-                //bat "git push origin --delete ${BRANCH_NAME}"
-            }
-        }
-    }
 }
 
 // finally
