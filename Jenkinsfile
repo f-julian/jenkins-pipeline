@@ -32,59 +32,27 @@ stage('Build') {
 stage('IT-Test') {
     milestone label: 'IT'
 
-    forEachCountry(countries, { p, p1 ->
-        echo "IT-country p : $p"
-        echo "IT-country p1: $p1"
+    // don't move to a methode see JENKINS-38268
+    def tasks = [:]
+    for (i = 0; i < countries.size(); i++) {
+        def country = countries[i]
 
-        /*node {
-            lock(quantity: 1, label: 'mimas_it', variable: 'DBUSER') {
-                checkout scm
-                //bat "git checkout $buildTag"
+        tasks.put(country, {
+            node {
+                lock(quantity: 1, label: 'mimas_it', variable: 'DBUSER') {
+                    checkout scm
+                    //bat "git checkout $buildTag"
 
-                echo 'got: ' + env.DBUSER
-                echo "bootstrap $country"
-                echo "it test $country"
+                    echo 'got: ' + env.DBUSER
+                    echo "bootstrap $country"
+                    echo "it test $country"
+                }
             }
-        }*/
-    })
-}
-
-// JENKINS-38268
-@NonCPS
-def doIt(country, task) {
-    echo "doIt with : $country"
-    task.call(country)
-}
-
-@NonCPS
-def itTask(country, task) {
-    echo "IT-country bla : $country"
-
-    def c = { cc ->
-        echo "IT-country bla in clos : $cc"
+        })
     }
-    c.call(country)
-    task.call(country)
 
-    /*node {
-        lock(quantity: 1, label: 'mimas_it', variable: 'DBUSER') {
-            checkout scm
-            //bat "git checkout $buildTag"
-
-            echo 'got: ' + env.DBUSER
-            echo "bootstrap $country"
-            echo "it test $country"
-        }
-    }*/
+    parallel(tasks)
 }
-
-stage('IT-Test_BLA') {
-    milestone label: 'IT-bla'
-
-    forEachCountryTest(countries)
-}
-
-
 
 stage('UI-Test') {
     if (!autoDeploy) {
@@ -93,29 +61,33 @@ stage('UI-Test') {
 
     milestone label: 'UI'
 
+    // don't move to a methode see JENKINS-38268
+    def tasks = [:]
+    for (i = 0; i < countries.size(); i++) {
+        def country = countries[i]
 
-
-    forEachCountry(countries, { country ->
-
-        withTestEnv(country, { envName, dbUser, envUrl ->
-            build job: 'deploy', parameters: [string(name: 'ENV_NAME', value: envName),
-                                              string(name: 'DB_USER', value: dbUser),
-                                              string(name: 'COUNTRY', value: country)]
-            node {
-                echo 'checkout'
-                echo "geb on $envUrl"
-            }
-
-            if (!skipUndeploy) {
-                if (!autoUndeploy) {
-                    input message: 'Undeploy?'
+        tasks.put(country, {
+            withTestEnv(country, { envName, dbUser, envUrl ->
+                build job: 'deploy', parameters: [string(name: 'ENV_NAME', value: envName),
+                                                  string(name: 'DB_USER', value: dbUser),
+                                                  string(name: 'COUNTRY', value: country)]
+                node {
+                    echo 'checkout'
+                    echo "geb on $envUrl"
                 }
-                echo "undeploy country: $country envName:$envName"
-                // build job undeploy
-            }
 
+                if (!skipUndeploy) {
+                    if (!autoUndeploy) {
+                        input message: 'Undeploy?'
+                    }
+                    echo "undeploy country: $country envName:$envName"
+                    // build job undeploy
+                }
+            })
         })
-    })
+    }
+
+    parallel(tasks)
 }
 
 // finally
@@ -124,35 +96,6 @@ stage('delete build tag') {
         checkout scm
         //bat "git push origin :refs/tags/$buildTag"
     }
-}
-
-def forEachCountry(countries, task) {
-    def tasks = [:]
-    for (i = 0; i < countries.size(); i++) {
-        def country = countries[i] //TODO
-
-        tasks.put(country, {
-            println "country in clos: $country"
-            doIt(country, task)
-            //task.call(country, country)
-        })
-    }
-
-    parallel(tasks)
-}
-
-def forEachCountryTest(countries) {
-    def tasks = [:]
-    for (i = 0; i < countries.size(); i++) {
-        def country = countries[i] //TODO
-
-        tasks.put(country, {
-            println "country in forEachCountryTest: $country"
-            itTask(country)
-        })
-    }
-
-    parallel(tasks)
 }
 
 def withTestEnv(country, task) {
