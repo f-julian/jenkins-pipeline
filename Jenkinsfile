@@ -1,8 +1,14 @@
 #!groovy
 def countries = ['be', 'ch', 'nl']
-def autoDeploy = isMaster() || isReleaseBranch()
-def autoUndeploy = !isMaster()
-def skipUndeploy = isMaster()
+
+properties([parameters([booleanParam(name: 'merge', defaultValue: false, description: 'merge branch to mergeTarget'),
+                        string(name: 'mergeTarget', defaultValue: 'origin/master', description: 'target of the merge')]),
+            [$class: 'RebuildSettings', autoRebuild: false, rebuildDisabled: false],
+            pipelineTriggers([])])
+
+def isAutoDeploy = isMaster() || isReleaseBranch() || merge as boolean
+def isSkipUndeploy = isMaster()
+
 def updateVersion = !isMaster() && !isReleaseBranch()
 
 def buildTag
@@ -55,7 +61,7 @@ stage('IT-Test') {
 }
 
 stage('UI-Test') {
-    if (!autoDeploy) {
+    if (!isAutoDeploy) {
         input message: 'Deploy?'
     }
 
@@ -91,8 +97,8 @@ stage('UI-Test') {
                     echo "geb on $envUrl"
                 }
 
-                if (!skipUndeploy) {
-                    if (!autoUndeploy) {
+                if (!isSkipUndeploy) {
+                    if (!isAutoDeploy) {
                         input message: 'Undeploy?'
                     }
                     echo "undeploy country: $country envName:$envName"
