@@ -118,7 +118,7 @@ def withTestEnv(country, task) {
     if (isMaster()) {
         def dbUser = "ci_$country"
         def envName = envNameForBranch(BRANCH_NAME)
-        def envUrl = "${country}.cosmolb.mgm-edv.de/mimas/ci"
+        def envUrl = "http://${country}.cosmolb.mgm-edv.de/mimas/ci"
         task.call(envName, dbUser, envUrl)
     } else {
         lock(quantity: 1, label: 'mimas_dev_env', variable: 'DBUSER') {
