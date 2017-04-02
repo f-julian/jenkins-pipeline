@@ -75,7 +75,7 @@ stage('UI-Test') {
         tasks.put(country, {
 
             def envName = envNameForBranch()
-            def devEnvLabel = devEnvLabelForBranch()
+            def devEnvLabel = devEnvLabelForBranch(country)
             def envUrl = "${country}.cosmolb.mgm-edv.de/mimas/$envName"
 
             lock(quantity: 1, label: devEnvLabel, variable: 'DBUSER') {
@@ -148,7 +148,7 @@ def envNameForBranch() {
     return qualifier
 }
 
-def devEnvLabelForBranch() {
+def devEnvLabelForBranch(country) {
     if (isMaster()) {
         "mimas_ci_$country"
     } else {
